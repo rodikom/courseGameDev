@@ -25,13 +25,17 @@ public class PlayerController : MonoBehaviour
     {
         animator = GetComponent<Animator>();
     }
-
+    private bool IsGrounded()
+    {
+        return Physics2D.OverlapCircle(groundChecker.position, 0.3f, groundLayer);
+    }
     private void Update()
     {
         rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
-
+        var isGrounded = IsGrounded();
+        
         animator.SetFloat("Speed", Mathf.Abs(horizontal));
-        animator.SetBool("isGrounded", IsGrounded());
+        animator.SetBool("IsGrounded", isGrounded);
         animator.SetFloat("yVelocity", rb.velocity.y);
 
         if (isFacingRight && horizontal < 0f)
@@ -50,11 +54,6 @@ public class PlayerController : MonoBehaviour
 
         if (context.canceled && rb.velocity.y > 0f)
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-    }
-
-    private bool IsGrounded()
-    {
-        return Physics2D.OverlapCircle(groundChecker.position, 0.2f, groundLayer);
     }
 
     private void Flip()
@@ -80,7 +79,6 @@ public class PlayerController : MonoBehaviour
     private IEnumerator PerformAttack()
     {
         isAttacking = true;
-        animator.SetTrigger("Attack");
         weapon.SetActive(true);
 
         yield return new WaitForSeconds(0.2f);
