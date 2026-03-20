@@ -10,14 +10,15 @@ public class PlayerController : MonoBehaviour
     public Transform groundChecker;
     public LayerMask groundLayer;
 
-    private Animator animator;
-    private float horizontal;
     [SerializeField, Range(0f, 15f)] private float speed = 8f;
     [SerializeField, Range(0f, 35f)] private float jumpingPower = 11f;
 
     [Header("Weapon")]
-    [SerializeField] private GameObject weapon; 
+    [SerializeField] private GameObject weapon;
 
+    private Animator animator;
+    private float horizontal;
+    private bool isAttacking;
     private bool isFacingRight = true;
 
     private void Awake()
@@ -71,16 +72,20 @@ public class PlayerController : MonoBehaviour
 
     public void Attack(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (context.performed &&  !isAttacking)
         {
             StartCoroutine(PerformAttack());
         }
     }
     private IEnumerator PerformAttack()
     {
+        isAttacking = true;
         animator.SetTrigger("Attack");
         weapon.SetActive(true);
+
         yield return new WaitForSeconds(0.2f);
+
         weapon.SetActive(false);
+        isAttacking = false;
     }
 }
